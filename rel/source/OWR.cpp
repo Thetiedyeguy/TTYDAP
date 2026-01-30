@@ -748,8 +748,48 @@ namespace mod::owr
             ttyd::swdrv::swSet(6321);
     }
 
+    void parseMapBero(const char* str, const char** outMap, const char** outBero)
+    {
+        static char buffer[64];
+        strncpy(buffer, str, sizeof(buffer));
+        buffer[sizeof(buffer)-1] = '\0';
+
+        char* colon = strchr(buffer, ':');
+        if (!colon) return;
+
+        *colon = '\0';
+        *outMap = buffer;
+        *outBero = colon + 1;
+    }
+
+
     KEEP_FUNC void seqSetSeqHook(SeqIndex seq, const char *map, const char *bero)
     {   
+        gc::os::OSReport(
+            "[MAP LOADING] seq=%d map=%s bero=%s\n",
+            (int)seq,
+            map ? map : "<null>",
+            bero ? bero : "<null>"
+        );
+
+        char key[64];
+        snprintf(key, sizeof(key), "%s:%s", map, bero);
+
+        const char* result = ttyd::msgdrv::msgSearch(key);
+        if (result)
+        {
+            parseMapBero(result, &map, &bero);
+        }
+
+        gc::os::OSReport(
+            "[MAP LOADED] seq=%d map=%s bero=%s result=%s\n",
+            (int)seq,
+            map ? map : "<null>",
+            bero ? bero : "<null>",
+            result
+        );
+
+
         if (seq == SeqIndex::kGameOver && !gState->firstDeath)
         {
             gState->apSettings->deathLinkSent = 1;
@@ -921,8 +961,9 @@ namespace mod::owr
     {
         g__load_trampoline(mapName, entranceName, beroName);
         for (int i = 8; i < 16; i++) gState->state_msgWork[i] = 0;
-        ttyd::msgdrv::msgLoad("mod", 2);
-        ttyd::msgdrv::msgLoad("desc", 3);
+        ttyd::msgdrv::msgLoad("warp", 2);
+        ttyd::msgdrv::msgLoad("mod", 3);
+        ttyd::msgdrv::msgLoad("desc", 4);
     }
 
     KEEP_FUNC const char *msgSearchHook(const char *msgKey)
