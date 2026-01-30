@@ -252,7 +252,7 @@ EVT_END()
 EVT_BEGIN_KEEP(starstone_item_handler)
     USER_FUNC(evt_mario::evt_mario_key_onoff, 0)
     USER_FUNC(evt_party::evt_party_stop, 0)
-    USER_FUNC(pouchStarstoneItem, LW(2), LW(1))
+    USER_FUNC(pouchStarstoneItem, LW(2), LW(1), LW(0))
     RETURN()
 EVT_END()
 
